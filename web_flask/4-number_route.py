@@ -29,17 +29,17 @@ def second(text):
 
 
 @app.route('/python/<text>', strict_slashes=False)
-def tirth(text = 'is cool'):
+@app.route('/python', strict_slashes=False)
+def tirth(text='is cool'):
     """ Route function for the root URL ('/python/<text>') """
     txt = text.replace("_", " ")
     return f'Python {txt}'
 
 
-@app.route('/number/<n>', strict_slashes=False)
+@app.route('/number/<int:n>', strict_slashes=False)
 def fourth(n):
     """ Route function for the root URL ('/number/<n>') """
-    if isinstance(n, int):
-        return f'{n} is a number'
+    return f'{n} is a number'
 
 
 if __name__ == "__main__":
