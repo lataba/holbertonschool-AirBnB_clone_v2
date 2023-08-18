@@ -118,34 +118,37 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-
-        argum = args.split()
-        class_name = argum[0]
-        if class_name not in HBNBCommand.classes:
+        elif args.split()[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
 
-        new_instance = HBNBCommand.classes[class_name]()
-        for parameters in argum[1:]:
-            key, value = parameters.split("=")
+        def isFloat(num):
+            try:
+                float(num)
+                return True
+            except Exception:
+                return False
 
-            if hasattr(new_instance, key):
-                if value[0] == '"' and value[-1] == '"':
-                    value = value[1:-1]
-                    value = value.replace("_", " ")
-                else:
-                    try:
-                        value = int(value)
-                    except ValueError:
-                        try:
-                            value = float(value)
-                        except ValueError:
-                            pass
-                setattr(new_instance, key, value)
-        new_instance.save()
+        arg = args.split()
+        obj = HBNBCommand.classes[arg[0]]()
+
+        for i in range(1, len(arg)):
+            params = arg[i].split("=")
+            if "id" in params[0]:
+                params[1] = params[1].replace('_', ' ')
+                params[1] = params[1].strip('\"')
+            elif params[1].isdigit() and "." not in params[1]:
+                params[1] = int(params[1])
+            elif isFloat(params[1]):
+                params[1] = float(params[1])
+            else:
+                params[1] = params[1].replace('_', ' ')
+                params[1] = params[1].strip('\"')
+            setattr(obj, params[0], params[1])
+
+        obj.save()
+        print(obj.id)
         storage.save()
-        print(new_instance.id)
-
 
     def help_create(self):
         """ Help information for the create method """
@@ -223,19 +226,17 @@ class HBNBCommand(cmd.Cmd):
         print_list = []
 
         if args:
-            args = args.split(' ')[0]
+            args = args.split(' ')[0]  # remove possible trailing args
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-
-            objects = storage.all()
-            for obj_id, obj in objects.items():
-                if obj.__class__.__name__ == args:
-                    print_list.append(str(obj))
+            to_print = storage.all(HBNBCommand.classes[args])
+            for k, v in to_print.items():
+                print_list.append(str(v))
         else:
-            objects = storage.all()
-            for obj_id, obj in objects.items():
-                print_list.append(str(obj))
+            to_print = storage.all()
+            for k, v in to_print.items():
+                print_list.append(str(v))
 
         print(print_list)
 
