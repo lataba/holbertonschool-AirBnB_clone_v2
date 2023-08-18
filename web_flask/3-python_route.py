@@ -28,8 +28,9 @@ def second(text):
     return f'C {txt}'
 
 
+@app.route('/python', strict_slashes=False)
 @app.route('/python/<text>', strict_slashes=False)
-def tirth(text):
+def tirth(text='is cool'):
     """ Route function for the root URL ('/python/<text>') """
     txt = text.replace("_", " ")
     return f'Python {txt}'
